@@ -9,9 +9,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MouseEvent, useState } from "react";
+import Highlighter from "react-highlight-words";
 import { useForm } from "./lib/hooks";
 import { randomNumber, separateByParagraphs } from "./lib/utils";
-
 export default function App() {
   const { handleChange, form } = useForm();
 
@@ -25,13 +25,9 @@ export default function App() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(form.mainText);
     const paragraphs = separateByParagraphs(form.mainText);
-    console.log(paragraphs);
 
     const references = separateByParagraphs(form.references, 2);
-
-    console.log(references);
 
     if (paragraphs.length < references.length) {
       alert(
@@ -44,7 +40,11 @@ export default function App() {
     const randomIndex: number[] = [];
     while (randomIndex.length < references.length) {
       const random = randomNumber(0, paragraphs.length - 1);
-      if (!randomIndex.includes(random)) {
+      if (
+        !randomIndex.includes(random) &&
+        !randomIndex.includes(random - 1) &&
+        !randomIndex.includes(random + 1)
+      ) {
         randomIndex.push(random);
       }
     }
@@ -147,13 +147,22 @@ export default function App() {
                   onChange={(e) => setPreview(e.target.value)}
                 />
               ) : (
-                <div>
+                <div className="flex flex-col">
                   {preview
-                    ? preview.split("\n\n").map((line, index) => (
-                        <p key={index} className="mb-4">
-                          {line}
-                        </p>
-                      ))
+                    ? preview
+                        .split("\n\n")
+                        .map((line, index) => (
+                          <Highlighter
+                            key={index}
+                            textToHighlight={line}
+                            searchWords={separateByParagraphs(
+                              form.references,
+                              2
+                            )}
+                            autoEscape={true}
+                            className="mb-3"
+                          ></Highlighter>
+                        ))
                     : "Your text with inserted references will appear here."}
                 </div>
               )}
