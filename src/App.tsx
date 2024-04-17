@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ClipboardIcon } from "lucide-react";
 import { MouseEvent, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useForm } from "./lib/hooks";
@@ -99,15 +100,31 @@ export default function App() {
         </h1>
         <div className="grid grid-cols-2 gap-6">
           <form className="grid gap-6">
-            <div>
-              <Label htmlFor="main-text">Enter Text Here</Label>
+            <div className="relative">
               <Textarea
-                className="h-60"
+                className={`h-60 ${form.mainText ? "" : "opacity-0"}`}
                 id="main-text"
                 placeholder="Paste your text here..."
                 onChange={handleChange}
                 name="mainText"
+                autoFocus
               />
+
+              {!(form.mainText.length > 0) && (
+                <div className="absolute top-0 left-0 right-0 w-full h-full">
+                  <div
+                    key="1"
+                    className="w-full h-full flex items-center justify-center "
+                  >
+                    <button className="flex flex-col items-center justify-center w-full h-full rounded-lg border-2 border-[#39ff14]">
+                      <ClipboardIcon className="w-12 h-12 text-[#39ff14]" />
+                      <span className="mt-2 text-[#39ff14] text-lg font-semibold italic">
+                        Paste Text
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <Label htmlFor="references">References</Label>
