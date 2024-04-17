@@ -25,7 +25,7 @@ export default function App() {
     e.preventDefault();
     e.stopPropagation();
 
-    const paragraphs = separateByParagraphs(form.mainText);
+    const paragraphs = separateByParagraphs(form.mainText).slice(0, 4);
 
     const references = separateByParagraphs(form.references, 2);
 
@@ -36,17 +36,35 @@ export default function App() {
       return;
     }
 
+    console.log({ paragraphs });
+
+    const excludeIndexes: number[] = [];
+
+    paragraphs.forEach((paragraph, index) => {
+      if (paragraph.endsWith(":") || paragraph.split(" ").length <= 5) {
+        excludeIndexes.push(index);
+      }
+    });
+
+    console.log({ excludeIndexes });
+
     // Select {references.length} random paragraphs
     const randomIndex: number[] = [];
-    while (randomIndex.length < references.length) {
+    let count = 0;
+    while (
+      randomIndex.length < references.length &&
+      count <= paragraphs.length
+    ) {
       const random = randomNumber(0, paragraphs.length - 1);
       if (
         !randomIndex.includes(random) &&
         !randomIndex.includes(random - 1) &&
-        !randomIndex.includes(random + 1)
+        !randomIndex.includes(random + 1) &&
+        !excludeIndexes.includes(random)
       ) {
         randomIndex.push(random);
       }
+      count++;
     }
 
     console.log({ randomIndex });
