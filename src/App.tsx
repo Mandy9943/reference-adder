@@ -25,7 +25,7 @@ export default function App() {
     e.preventDefault();
     e.stopPropagation();
 
-    const paragraphs = separateByParagraphs(form.mainText).slice(0, 4);
+    const paragraphs = separateByParagraphs(form.mainText);
 
     const references = separateByParagraphs(form.references, 2);
 
