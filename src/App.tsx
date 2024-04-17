@@ -73,9 +73,20 @@ export default function App() {
     // Insert a random reference after each selected paragraph
     const modifiedText = paragraphs.map((paragraph, index) => {
       if (randomIndex.includes(index)) {
-        return `${paragraph} ${
-          references[randomNumber(0, references.length - 1)]
-        }`;
+        console.log(
+          "end parragraph",
+          paragraph.trim()[paragraph.trim().length - 1]
+        );
+
+        if (paragraph.trim().endsWith(".")) {
+          return `${paragraph.trim().slice(0, -1)} ${
+            references[randomNumber(0, references.length - 1)]
+          }.`;
+        } else {
+          return `${paragraph} ${
+            references[randomNumber(0, references.length - 1)]
+          }.`;
+        }
       }
       return paragraph;
     });
@@ -83,7 +94,7 @@ export default function App() {
     // Join the paragraphs and references
     const joinedText = modifiedText.join("\n\n");
 
-    console.log(joinedText);
+    // console.log(joinedText);
 
     // Set the joined text to the preview panel
     setPreview(joinedText);
