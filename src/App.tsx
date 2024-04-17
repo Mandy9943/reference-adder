@@ -93,33 +93,34 @@ export default function App() {
       key="1"
       className="flex flex-col items-center justify-center min-h-screen py-6 bg-gray-50 dark:bg-gray-900"
     >
-      <div className="w-full max-w-2xl mx-auto space-y-6">
+      <div className="w-full max-w-7xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-center">
           Random References Inserter
         </h1>
-        <form className="grid gap-6">
-          <div>
-            <Label htmlFor="main-text">Enter Text Here</Label>
-            <Textarea
-              className="h-60"
-              id="main-text"
-              placeholder="Paste your text here..."
-              onChange={handleChange}
-              name="mainText"
-            />
-          </div>
-          <div>
-            <Label htmlFor="references">References</Label>
-            <Textarea
-              className="h-24"
-              id="references"
-              placeholder="Paste your references here separated by blank lines..."
-              onChange={handleChange}
-              name="references"
-            />
-          </div>
-          <div className="flex items-center justify-end">
-            {/* <Button variant="outline">
+        <div className="grid grid-cols-2 gap-6">
+          <form className="grid gap-6">
+            <div>
+              <Label htmlFor="main-text">Enter Text Here</Label>
+              <Textarea
+                className="h-60"
+                id="main-text"
+                placeholder="Paste your text here..."
+                onChange={handleChange}
+                name="mainText"
+              />
+            </div>
+            <div>
+              <Label htmlFor="references">References</Label>
+              <Textarea
+                className="h-24"
+                id="references"
+                placeholder="Paste your references here separated by blank lines..."
+                onChange={handleChange}
+                name="references"
+              />
+            </div>
+            <div className="flex items-center justify-end">
+              {/* <Button variant="outline">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost">Options</Button>
@@ -142,85 +143,90 @@ export default function App() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </Button> */}
-            <Button onClick={handleInsertReferences}>Insert References</Button>
-          </div>
-        </form>
-        <div className="border rounded-lg overflow-auto">
-          <ScrollArea className="h-72 w-full rounded-md border">
-            <div className="p-4 text-sm relative">
-              <Button
-                className="absolute right-2 top-2 text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                variant="ghost"
-                onClick={() => {
-                  setEditPreview((prev) => !prev);
-                }}
-              >
-                Edit
+              <Button onClick={handleInsertReferences}>
+                Insert References
               </Button>
-              <h4 className="mb-4 text-lg font-medium leading-none">Preview</h4>
-              {editPreview ? (
-                <Textarea
-                  className="h-60"
-                  value={preview}
-                  onChange={(e) => setPreview(e.target.value)}
-                />
-              ) : (
-                <div className="flex flex-col">
-                  {preview
-                    ? preview
-                        .split("\n\n")
-                        .map((line, index) => (
-                          <Highlighter
-                            key={index}
-                            textToHighlight={line}
-                            searchWords={separateByParagraphs(
-                              form.references,
-                              2
-                            )}
-                            autoEscape={true}
-                            className="mb-3"
-                          ></Highlighter>
-                        ))
-                    : "Your text with inserted references will appear here."}
-                </div>
-              )}
             </div>
-          </ScrollArea>
-          <div className="flex items-center justify-end p-2 border-t">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="mr-2"
-                    variant="outline"
-                    onClick={() => {
-                      setPreview("");
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Reset all the input fields and the preview panel.</p>
-                </TooltipContent>
-              </Tooltip>
+          </form>
+          <div className=" rounded-lg overflow-auto grid gap-6">
+            <ScrollArea className="h-96 w-full rounded-md border">
+              <div className="p-4 text-sm relative">
+                <Button
+                  className="absolute right-2 top-2 text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  variant="ghost"
+                  onClick={() => {
+                    setEditPreview((prev) => !prev);
+                  }}
+                >
+                  Edit
+                </Button>
+                <h4 className="mb-4 text-lg font-medium leading-none">
+                  Preview
+                </h4>
+                {editPreview ? (
+                  <Textarea
+                    className="h-60"
+                    value={preview}
+                    onChange={(e) => setPreview(e.target.value)}
+                  />
+                ) : (
+                  <div className="flex flex-col">
+                    {preview
+                      ? preview
+                          .split("\n\n")
+                          .map((line, index) => (
+                            <Highlighter
+                              key={index}
+                              textToHighlight={line}
+                              searchWords={separateByParagraphs(
+                                form.references,
+                                2
+                              )}
+                              autoEscape={true}
+                              className="mb-3"
+                            ></Highlighter>
+                          ))
+                      : "Your text with inserted references will appear here."}
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            <div className="flex items-center justify-end p-2 border-t">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
+                      className="mr-2"
+                      variant="outline"
                       onClick={() => {
-                        navigator.clipboard.writeText(preview);
+                        setPreview("");
                       }}
                     >
-                      Copy Modified Text
+                      Reset
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Download the text with inserted references.</p>
+                    <p>Reset all the input fields and the preview panel.</p>
                   </TooltipContent>
                 </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(preview);
+                        }}
+                      >
+                        Copy Modified Text
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Download the text with inserted references.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </TooltipProvider>
-            </TooltipProvider>
+            </div>
           </div>
         </div>
       </div>
