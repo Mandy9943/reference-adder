@@ -42,7 +42,7 @@ export default function App() {
     const excludeIndexes: number[] = [];
 
     paragraphs.forEach((paragraph, index) => {
-      if (paragraph.endsWith(":") || paragraph.split(" ").length <= 5) {
+      if (paragraph.endsWith(":") || paragraph.split(" ").length <= 11) {
         excludeIndexes.push(index);
       }
     });
