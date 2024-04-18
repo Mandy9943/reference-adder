@@ -16,3 +16,26 @@ export const separateByParagraphs = (
 export const randomNumber = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export function modifyReferences(text: string, replacements: string[]): string {
+  // La expresión regular busca texto dentro de paréntesis al final de los párrafos
+  const regex = /\([^)]*\)\./g;
+
+  // Recorre cada coincidencia encontrada y reemplaza con el elemento correspondiente del arreglo replacements
+  let currentIndex = 0;
+  return text.replace(regex, (match) => {
+    if (currentIndex < replacements.length) {
+      // Reemplaza la referencia encontrada con el reemplazo correspondiente
+      const replacement = replacements[currentIndex];
+      currentIndex++;
+      return replacement;
+    } else {
+      // Si no hay más reemplazos disponibles, devuelve la coincidencia original
+
+      if (replacements.length === 0) {
+        return ".";
+      }
+      return match;
+    }
+  });
+}

@@ -15,5 +15,6 @@ export const useForm = () => {
   return {
     form: state,
     handleChange,
+    setState,
   };
 };

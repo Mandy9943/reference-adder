@@ -1,6 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
@@ -9,16 +17,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ClipboardIcon } from "lucide-react";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { useForm } from "./lib/hooks";
-import { randomNumber, separateByParagraphs } from "./lib/utils";
+import {
+  modifyReferences,
+  randomNumber,
+  separateByParagraphs,
+} from "./lib/utils";
+type OptionsType = "random" | "delete" | "replace";
 export default function App() {
-  const { handleChange, form } = useForm();
+  const { handleChange, form, setState } = useForm();
 
   const [preview, setPreview] = useState("");
 
   const [editPreview, setEditPreview] = useState(false);
+
+  const [option, setOption] = useState<OptionsType>("random");
 
   const handleInsertReferences = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
@@ -42,7 +57,7 @@ export default function App() {
     const excludeIndexes: number[] = [];
 
     paragraphs.forEach((paragraph, index) => {
-      if (paragraph.endsWith(":") || paragraph.split(" ").length <= 11) {
+      if (paragraph.endsWith(": ") || paragraph.split(" ").length <= 11) {
         excludeIndexes.push(index);
       }
     });
@@ -94,11 +109,39 @@ export default function App() {
     // Join the paragraphs and references
     const joinedText = modifiedText.join("\n\n");
 
-    // console.log(joinedText);
-
-    // Set the joined text to the preview panel
-    setPreview(joinedText);
+    if (option === "delete") {
+      setPreview(modifyReferences(form.mainText, []));
+    } else if (option === "replace") {
+      setPreview(modifyReferences(form.mainText, references));
+    } else {
+      setPreview(joinedText);
+    }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === "v" && form.mainText === "") {
+        // Detecta Control+V
+        navigator.clipboard.readText().then((clipText) => {
+          console.log({ clipText });
+
+          setState({
+            ...form,
+            mainText: clipText,
+          });
+        }); // Establece el texto del portapapeles en el textarea
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Limpiar el evento al desmontar el componente
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.mainText]);
 
   return (
     <main
@@ -113,21 +156,34 @@ export default function App() {
           <form className="grid gap-6">
             <div className="relative">
               <Textarea
-                className={`h-60 ${form.mainText ? "" : "opacity-0"}`}
+                className={`h-60 ${form.mainText ? "" : "opacity-6"}`}
                 id="main-text"
-                placeholder="Paste your text here..."
+                placeholder=""
                 onChange={handleChange}
                 name="mainText"
                 autoFocus
+                value={form.mainText}
               />
 
               {!(form.mainText.length > 0) && (
-                <div className="absolute top-0 left-0 right-0 w-full h-full">
+                <div className="absolute top-0 left-0 right-0 w-full h-full flex justify-center items-center">
                   <div
                     key="1"
-                    className="w-full h-full flex items-center justify-center "
+                    className=" w-[208px] h-[146px] flex items-center justify-center"
                   >
-                    <button className="flex flex-col items-center justify-center w-full h-full rounded-lg border-2 border-[#39ff14]">
+                    <button
+                      className="flex flex-col items-center justify-center w-[208px] h-[146px] rounded-lg border-2 border-[#39ff14] hover:bg-[#e4e4e4] focus:ring-[#39ff14] font-semibold text-lg italic"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigator.clipboard.readText().then((clipText) => {
+                          setState({
+                            ...form,
+                            mainText: clipText,
+                          });
+                        }); // Establece el texto del portapapeles en el textarea
+                      }}
+                    >
                       <ClipboardIcon className="w-12 h-12 text-[#39ff14]" />
                       <span className="mt-2 text-[#39ff14] text-lg font-semibold italic">
                         Paste Text
@@ -147,32 +203,28 @@ export default function App() {
                 name="references"
               />
             </div>
-            <div className="flex items-center justify-end">
-              {/* <Button variant="outline">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">Options</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuRadioGroup defaultValue="3">
-                    <DropdownMenuRadioItem value="3">
-                      3 references per page
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="4">
-                      4 references per page
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="5">
-                      5 references per page
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="6">
-                      6 references per page
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </Button> */}
+            <div className="flex items-center justify-between">
+              <Select
+                defaultValue="random"
+                onValueChange={(val: OptionsType) => setOption(val)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="random">Add random </SelectItem>
+                    <SelectItem value="delete"> Find & delete</SelectItem>
+                    <SelectItem value="replace">find & replace</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               <Button onClick={handleInsertReferences}>
-                Insert References
+                {option === "random"
+                  ? "Insert Random References"
+                  : option === "delete"
+                  ? "Delete References"
+                  : "Replace References"}
               </Button>
             </div>
           </form>
