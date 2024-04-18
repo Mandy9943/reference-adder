@@ -43,13 +43,10 @@ export default function App() {
 
     const paragraphs = separateByParagraphs(form.mainText);
 
-    const references = separateByParagraphs(form.references, 2);
+    let references = separateByParagraphs(form.references, 2);
 
     if (paragraphs.length < references.length) {
-      alert(
-        "The number of paragraphs should be greater than or equal to the number of references."
-      );
-      return;
+      references = references.slice(0, paragraphs.length);
     }
 
     console.log({ paragraphs });

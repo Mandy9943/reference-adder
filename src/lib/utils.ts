@@ -23,19 +23,26 @@ export function modifyReferences(text: string, replacements: string[]): string {
 
   // Recorre cada coincidencia encontrada y reemplaza con el elemento correspondiente del arreglo replacements
   let currentIndex = 0;
-  return text.replace(regex, (match) => {
-    if (currentIndex < replacements.length) {
-      // Reemplaza la referencia encontrada con el reemplazo correspondiente
-      const replacement = replacements[currentIndex];
-      currentIndex++;
-      return replacement;
-    } else {
-      // Si no hay más reemplazos disponibles, devuelve la coincidencia original
+  return removeSpacesBeforeDots(
+    text.replace(regex, (match) => {
+      if (currentIndex < replacements.length) {
+        // Reemplaza la referencia encontrada con el reemplazo correspondiente
+        const replacement = replacements[currentIndex];
+        currentIndex++;
+        return replacement;
+      } else {
+        // Si no hay más reemplazos disponibles, devuelve la coincidencia original
 
-      if (replacements.length === 0) {
-        return ".";
+        if (replacements.length === 0) {
+          return ".";
+        }
+        return match;
       }
-      return match;
-    }
-  });
+    })
+  );
+}
+
+// this function will find in a text all final dots on all the sentences and if there are a space before the dot, it will remove it
+export function removeSpacesBeforeDots(text: string): string {
+  return text.replace(/ \./g, ".");
 }
