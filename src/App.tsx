@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/tooltip";
 import { ClipboardIcon } from "lucide-react";
 import { MouseEvent, useEffect, useState } from "react";
-import Highlighter from "react-highlight-words";
+import Marker from "./components/Marker/Marker";
 import { useForm } from "./lib/hooks";
 import {
-  modifyReferences,
+  deleteReferences,
   randomNumber,
+  replaceReferences,
   separateByParagraphs,
 } from "./lib/utils";
 type OptionsType = "random" | "delete" | "replace";
@@ -34,6 +35,10 @@ export default function App() {
   const [editPreview, setEditPreview] = useState(false);
 
   const [option, setOption] = useState<OptionsType>("random");
+
+  const removeReferences = (text: string) => {
+    setPreview(deleteReferences(text));
+  };
 
   const handleInsertReferences = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
@@ -85,11 +90,6 @@ export default function App() {
     // Insert a random reference after each selected paragraph
     const modifiedText = paragraphs.map((paragraph, index) => {
       if (randomIndex.includes(index)) {
-        console.log(
-          "end parragraph",
-          paragraph.trim()[paragraph.trim().length - 1]
-        );
-
         if (paragraph.trim().endsWith(".")) {
           return `${paragraph.trim().slice(0, -1)} ${
             references[randomNumber(0, references.length - 1)]
@@ -107,12 +107,21 @@ export default function App() {
     const joinedText = modifiedText.join("\n\n");
 
     if (option === "delete") {
-      setPreview(modifyReferences(form.mainText, []));
+      removeReferences(form.mainText);
     } else if (option === "replace") {
-      setPreview(modifyReferences(form.mainText, references));
+      setPreview(replaceReferences(form.mainText, references));
     } else {
       setPreview(joinedText);
     }
+  };
+
+  const handleRemoveOnReference = (textToRemove: string) => {
+    const newText = preview.replace(textToRemove, "");
+    const paragraphs = separateByParagraphs(newText);
+    const joinedText = paragraphs.join("\n\n");
+
+    console.log({ textToRemove, newText, joinedText });
+    setPreview(joinedText);
   };
 
   useEffect(() => {
@@ -252,16 +261,12 @@ export default function App() {
                       ? preview
                           .split("\n\n")
                           .map((line, index) => (
-                            <Highlighter
+                            <Marker
                               key={index}
-                              textToHighlight={line}
-                              searchWords={separateByParagraphs(
-                                form.references,
-                                2
-                              )}
-                              autoEscape={true}
-                              className="mb-3"
-                            ></Highlighter>
+                              line={line}
+                              highlight={form.references}
+                              onClickHighlighted={handleRemoveOnReference}
+                            />
                           ))
                       : "Your text with inserted references will appear here."}
                   </div>

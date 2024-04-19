@@ -46,3 +46,16 @@ export function modifyReferences(text: string, replacements: string[]): string {
 export function removeSpacesBeforeDots(text: string): string {
   return text.replace(/ \./g, ".");
 }
+
+export const deleteReferences = (text: string): string => {
+  const newText = modifyReferences(text, []);
+  return newText;
+};
+
+export const replaceReferences = (
+  text: string,
+  replacements: string[]
+): string => {
+  const newText = modifyReferences(text, replacements);
+  return newText;
+};
