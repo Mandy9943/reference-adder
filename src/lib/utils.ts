@@ -59,3 +59,41 @@ export const replaceReferences = (
   const newText = modifyReferences(text, replacements);
   return newText;
 };
+export function findWordBoundaries(
+  str: string,
+  index: number
+): {
+  start: number;
+  end: number;
+} | null {
+  // Primero, aseguramos que el índice esté dentro de los límites de la cadena
+  if (index < 0 || index >= str.length) {
+    return null; // Retorna nulo si el índice no es válido
+  }
+
+  // Encuentra el inicio de la palabra
+  let start = index;
+  while (start > 0 && str[start - 1] !== " ") {
+    start--;
+  }
+
+  // Encuentra el final de la palabra
+  let end = index;
+  while (end < str.length && str[end] !== " ") {
+    end++;
+  }
+
+  // Retorna el inicio y el final de la palabra
+  return { start: start, end: end };
+}
+
+export const stringToEditorValue = (text: string) => {
+  return text.split("\n").map((p) => ({
+    type: "paragraph",
+    children: [
+      {
+        text: p,
+      },
+    ],
+  }));
+};
