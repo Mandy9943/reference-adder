@@ -1,15 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAppSelector } from "@/hooks/useRedux";
 import { stringToEditorValue } from "@/lib/utils";
-import { useCallback, useState } from "react";
-import { Text, createEditor } from "slate";
-import { Editable, Slate, withReact } from "slate-react";
+import { selectReferencesForEditor } from "@/redux/slices/appSlice";
+import { useCallback } from "react";
+import { Text } from "slate";
+import { Editable, ReactEditor, Slate } from "slate-react";
 import Leaf from "./Leaf";
 
-function TextEditor({ preview }: { preview: string }) {
-  const references = [""];
-  console.log("render TextEditor");
+const TextEditor = ({
+  preview,
+  editor,
+}: {
+  preview: string;
+  editor: ReactEditor;
+}) => {
+  const references = useAppSelector(selectReferencesForEditor);
 
-  const [editor] = useState(() => withReact(createEditor()));
+  console.log(editor);
 
   const decorate = useCallback(
     ([node, path]: any) => {
@@ -24,7 +31,6 @@ function TextEditor({ preview }: { preview: string }) {
       const parts = [...text.matchAll(regex)];
 
       for (const part of parts) {
-        console.log(part);
         const start = part.index;
         if (start) {
           const end = start + part[0].length;
@@ -41,6 +47,8 @@ function TextEditor({ preview }: { preview: string }) {
       // Highlight yellow inserted references
       references.forEach((reference) => {
         // regex from reference text
+        console.log({ reference });
+
         const referenceRegex = new RegExp(reference, "g");
         const referenceParts = [...text.matchAll(referenceRegex)];
 
@@ -64,18 +72,17 @@ function TextEditor({ preview }: { preview: string }) {
     [references]
   );
 
-  const renderLeaf = useCallback(
-    (props: any) => {
-      return <Leaf {...props} />;
-    },
-    [references]
-  );
+  const renderLeaf = useCallback((props: any) => {
+    return <Leaf {...props} />;
+  }, []);
 
   return (
-    <Slate editor={editor} initialValue={stringToEditorValue(preview)}>
-      <Editable decorate={decorate} renderLeaf={renderLeaf} className="p-2" />
-    </Slate>
+    <div>
+      <Slate editor={editor} initialValue={stringToEditorValue(preview)}>
+        <Editable decorate={decorate} renderLeaf={renderLeaf} className="p-2" />
+      </Slate>
+    </div>
   );
-}
+};
 
 export default TextEditor;

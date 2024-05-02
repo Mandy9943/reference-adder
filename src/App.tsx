@@ -1,10 +1,3 @@
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import ReferenceForm from "./components/Form/ReferenceForm";
 import Container from "./components/TextEditor/Container";
 export default function App() {
@@ -21,36 +14,6 @@ export default function App() {
           <ReferenceForm />
           <div className=" rounded-lg overflow-auto grid gap-6">
             <Container />
-            <div className="flex items-center justify-end p-2 border-t">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button className="mr-2" variant="outline">
-                      Reset
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Reset all the input fields and the preview panel.</p>
-                  </TooltipContent>
-                </Tooltip>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                      // onClick={() => {
-                      //   navigator.clipboard.writeText(preview);
-                      // }}
-                      >
-                        Copy Modified Text
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Download the text with inserted references.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </TooltipProvider>
-            </div>
           </div>
         </div>
       </div>

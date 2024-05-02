@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { Descendant, Text } from "slate";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -96,4 +97,12 @@ export const stringToEditorValue = (text: string) => {
       },
     ],
   }));
+};
+
+export const getTextFromNodes = (nodes: Descendant[]): string => {
+  return nodes
+    .map((node) =>
+      Text.isText(node) ? node.text : getTextFromNodes(node.children)
+    )
+    .join("\n");
 };

@@ -5,11 +5,13 @@ import { createSlice } from "@reduxjs/toolkit";
 // Define a type for the slice state
 interface AppState {
   textForEditor: string;
+  referencesForEditor: string[];
 }
 
 // Define the initial state using that type
 const initialState: AppState = {
   textForEditor: "",
+  referencesForEditor: [],
 };
 
 export const AppSlice = createSlice({
@@ -19,13 +21,21 @@ export const AppSlice = createSlice({
     updateTextForEditor: (state, action: PayloadAction<string>) => {
       state.textForEditor = action.payload;
     },
+
+    updateReferencesForEditor: (state, action: PayloadAction<string[]>) => {
+      state.referencesForEditor = action.payload;
+    },
   },
 });
 
-export const { updateTextForEditor } = AppSlice.actions;
+export const { updateTextForEditor, updateReferencesForEditor } =
+  AppSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectTextForEditor = (state: RootState) =>
   state.app.textForEditor;
+
+export const selectReferencesForEditor = (state: RootState) =>
+  state.app.referencesForEditor;
 
 export default AppSlice.reducer;

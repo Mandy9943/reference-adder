@@ -7,19 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { memo } from "react";
 
 export type AdderOptionsType = "random" | "delete" | "replace";
 
 const AdderOptions = ({
   setOption,
-  option,
 }: {
   setOption: (value: AdderOptionsType) => void;
-  option: AdderOptionsType;
 }) => {
-  console.log("render AdderOptions");
-
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -38,16 +33,10 @@ const AdderOptions = ({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Button type="submit">
-          {option === "random"
-            ? "Insert Random References"
-            : option === "delete"
-            ? "Delete References"
-            : "Replace References"}
-        </Button>
+        <Button type="submit">Preview text</Button>
       </div>
     </div>
   );
 };
 
-export default memo(AdderOptions);
+export default AdderOptions;

@@ -1,4 +1,14 @@
-import { randomNumber, separateByParagraphs } from "@/lib/utils";
+import { useAppDispatch } from "@/hooks/useRedux";
+import {
+  deleteReferences,
+  randomNumber,
+  replaceReferences,
+  separateByParagraphs,
+} from "@/lib/utils";
+import {
+  updateReferencesForEditor,
+  updateTextForEditor,
+} from "@/redux/slices/appSlice";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import AdderOptions, { AdderOptionsType } from "./AdderOptions/AdderOptions";
 import MainText from "./ManinText/MainText";
@@ -11,15 +21,15 @@ type Inputs = {
 };
 const ReferenceForm = () => {
   console.log("render ReferenceForm");
-
+  const dispatch = useAppDispatch();
   const methods = useForm<Inputs>({
     defaultValues: {
       mainText: "",
-      option: "replace",
+      option: "random",
       references: "",
     },
   });
-  const { handleSubmit, setValue, getValues } = methods;
+  const { handleSubmit, setValue } = methods;
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
 
@@ -80,17 +90,17 @@ const ReferenceForm = () => {
 
     // Join the paragraphs and references
     const joinedText = modifiedText.join("\n\n");
-    console.log(joinedText);
 
-    //   if (option === "delete") {
-    //     // removeReferences(form.mainText);
-    //   } else if (option === "replace") {
-    //     setPreview(
-    //       stringToEditorValue(replaceReferences(form.mainText, references))
-    //     );
-    //   } else {
-    //     setPreview(stringToEditorValue(joinedText));
-    //   }
+    if (data.option === "delete") {
+      dispatch(updateTextForEditor(deleteReferences(data.mainText)));
+    } else if (data.option === "replace") {
+      const textUpdated = replaceReferences(data.mainText, references);
+
+      dispatch(updateTextForEditor(textUpdated));
+    } else {
+      dispatch(updateTextForEditor(joinedText));
+    }
+    dispatch(updateReferencesForEditor(references));
   };
 
   return (
@@ -99,7 +109,6 @@ const ReferenceForm = () => {
         <MainText />
         <ReferenceText />
         <AdderOptions
-          option={getValues("option")}
           setOption={(val: AdderOptionsType) => setValue("option", val)}
         />
       </form>
