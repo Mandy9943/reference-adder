@@ -4,6 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
+// const ollama = new Ollama({ host: "https://pinocli.com" });
+
 type Inputs = {
   text: string;
   system: string;
@@ -32,10 +34,22 @@ paragraph to change:
     const finalPrompt = `${values.system}${values.text}`;
     setFinalPrompt(finalPrompt);
 
+    // direct ollama sdk
+    // const response = await ollama.generate({
+    //   model: "llama3",
+    //   prompt: finalPrompt,
+    //   stream: true,
+    // });
+    // for await (const part of response) {
+    //   setMessage((prev) => prev + part.response);
+    // }
+
+    // with express app
     const response = await fetch("https://pinocli.com/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Transfer-Encoding": "chunked",
       },
       body: JSON.stringify({
         model: "llama3",
