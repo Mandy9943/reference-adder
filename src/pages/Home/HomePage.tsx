@@ -1,4 +1,4 @@
-import ReferenceForm from "@/components/Form/ReferenceForm";
+import ReferenceForm from "@/components/ReferenceForm/ReferenceForm";
 import Container from "@/components/TextEditor/Container";
 
 const HomePage = () => {
