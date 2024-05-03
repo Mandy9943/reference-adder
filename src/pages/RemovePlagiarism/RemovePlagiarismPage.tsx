@@ -1,18 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Ollama } from "ollama/browser";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-const ollama = new Ollama({ host: "http://93.127.202.227" });
 type Inputs = {
   text: string;
   system: string;
 };
 const RemovePlagiarismPage = () => {
   const [message, setMessage] = useState("");
-  const [finalPrompt, setFinalPropmt] = useState("");
+  const [finalPrompt, setFinalPrompt] = useState("");
 
   const { register, watch, handleSubmit } = useForm<Inputs>({
     defaultValues: {
@@ -32,19 +30,35 @@ paragraph to change:
 
   const onSubmit: SubmitHandler<Inputs> = async (values) => {
     const finalPrompt = `${values.system}${values.text}`;
-    setFinalPropmt(finalPrompt);
-    console.log(finalPrompt);
+    setFinalPrompt(finalPrompt);
 
-    const response = await ollama.generate({
-      model: "llama3",
-
-      prompt: finalPrompt,
-      stream: true,
+    const response = await fetch("http://93.127.202.227/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama3",
+        prompt: finalPrompt,
+        stream: true,
+      }),
     });
-    for await (const part of response) {
-      // process.stdout.write(part.message.content)
-      setMessage((prevMessage) => prevMessage + part.response);
-      console.log(part.response);
+    if (response.body) {
+      const reader = response.body.getReader();
+      let responseString = "";
+      reader.read().then(function processText({ done, value }) {
+        if (done) {
+          setMessage(responseString);
+          console.log("Stream finished.");
+          return;
+        }
+
+        const chunk = new TextDecoder().decode(value);
+        responseString += chunk;
+        setMessage(responseString); // This updates state for every chunk received
+        console.log(chunk);
+        reader.read().then(processText);
+      });
     }
   };
 
