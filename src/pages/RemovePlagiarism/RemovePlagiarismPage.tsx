@@ -32,7 +32,7 @@ paragraph to change:
     const finalPrompt = `${values.system}${values.text}`;
     setFinalPrompt(finalPrompt);
 
-    const response = await fetch("http://93.127.202.227/generate", {
+    const response = await fetch("https://pinocli.com/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
