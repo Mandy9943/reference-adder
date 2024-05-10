@@ -80,7 +80,7 @@ paragraph to change:
     const paragraph = values.text;
     const finalPrompt = `${values.system}${paragraph}`; // Asegúrate de que esta es la manera en que quieres construir el prompt
 
-    const response = await fetch("http://localhost:4545/generate", {
+    const response = await fetch("https://pinocli.com/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
