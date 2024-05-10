@@ -77,50 +77,29 @@ paragraph to change:
   // };
 
   const onSubmit: SubmitHandler<Inputs> = async (values) => {
-    const paragraphs = values.text.split("\n\n").filter((p) => p.trim() !== ""); // Dividir el texto en párrafos y filtrar los vacíos
-    const finalResult = "";
-    console.log(paragraphs);
-    let responseString = "";
+    const paragraph = values.text;
+    const finalPrompt = `${values.system}${paragraph}`; // Asegúrate de que esta es la manera en que quieres construir el prompt
 
-    for (const paragraph of paragraphs) {
-      const finalPrompt = `${values.system}${paragraph}`; // Asegúrate de que esta es la manera en que quieres construir el prompt
+    const response = await fetch("http://localhost:4545/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Transfer-Encoding": "chunked",
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "user",
+            content: finalPrompt,
+          },
+        ],
+        model: "llama3-8b-8192",
+      }),
+    });
 
-      const response = await fetch("http://localhost:4545/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Transfer-Encoding": "chunked",
-        },
-        body: JSON.stringify({
-          model: "llama3",
-          prompt: finalPrompt,
-          stream: true,
-        }),
-      });
+    const data = await response.json();
 
-      if (response.body) {
-        const reader = response.body.getReader();
-
-        await new Promise((resolve, reject) => {
-          reader.read().then(function processText({ done, value }) {
-            if (done) {
-              responseString += "\n\n"; // Concatenar el resultado de este párrafo al resultado final
-              console.log(responseString);
-
-              setMessage(responseString); // Actualizar el mensaje después de cada párrafo
-
-              resolve();
-              return;
-            }
-
-            const chunk = new TextDecoder().decode(value);
-            responseString += chunk; // Acumular chunks del mismo párrafo
-            setMessage(responseString);
-            reader.read().then(processText);
-          });
-        });
-      }
-    }
+    setMessage(data.result);
   };
 
   return (
