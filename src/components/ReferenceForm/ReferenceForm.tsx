@@ -35,6 +35,8 @@ const ReferenceForm = () => {
     const paragraphs = separateByParagraphs(data.mainText);
 
     let references = separateByParagraphs(data.references.trim(), 2);
+    references = references.map((reference) => reference.trim());
+    console.log(references);
 
     if (paragraphs.length < references.length) {
       references = references.slice(0, paragraphs.length);
