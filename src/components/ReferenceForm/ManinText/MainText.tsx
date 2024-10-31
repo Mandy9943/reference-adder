@@ -1,5 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ClipboardIcon } from "lucide-react";
+import { ClipboardIcon, Trash2Icon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 const MainText = () => {
@@ -8,6 +9,19 @@ const MainText = () => {
   const { watch, register, setValue } = useFormContext();
   return (
     <div className="relative">
+      {watch("mainText", "").length > 0 && (
+        <Button
+          size="icon"
+          onClick={(e) => {
+            e.preventDefault();
+            setValue("mainText", "");
+          }}
+          className="absolute top-2 bg-blue-200 right-6 p-1 hover:bg-gray-200 rounded-md transition-colors"
+        >
+          <Trash2Icon className="w-5 h-5 text-gray-500 hover:text-red-500" />
+        </Button>
+      )}
+
       <Textarea
         className={`h-60`}
         id="main-text"
