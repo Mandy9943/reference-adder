@@ -10,7 +10,7 @@ const ReferenceText = () => {
     <div>
       <Label htmlFor="references">References</Label>
       <Textarea
-        className="h-24"
+        className="h-40"
         id="references"
         placeholder="Paste your references here separated by blank lines..."
         {...register("references")}

@@ -1,7 +1,6 @@
 import { useAppDispatch } from "@/hooks/useRedux";
 import {
   deleteReferences,
-  randomNumber,
   replaceReferences,
   separateByParagraphs,
 } from "@/lib/utils";
@@ -35,7 +34,7 @@ const ReferenceForm = () => {
 
     const paragraphs = separateByParagraphs(data.mainText);
 
-    let references = separateByParagraphs(data.references, 2);
+    let references = separateByParagraphs(data.references.trim(), 2);
 
     if (paragraphs.length < references.length) {
       references = references.slice(0, paragraphs.length);
@@ -53,36 +52,40 @@ const ReferenceForm = () => {
 
     console.log({ excludeIndexes });
 
-    // Select {references.length} random paragraphs
     const randomIndex: number[] = [];
-    let count = 0;
-    while (
-      randomIndex.length < references.length &&
-      count <= paragraphs.length
-    ) {
-      const random = randomNumber(0, paragraphs.length - 1);
-      if (
-        !randomIndex.includes(random) &&
-        !randomIndex.includes(random - 1) &&
-        !randomIndex.includes(random + 1) &&
-        !excludeIndexes.includes(random)
-      ) {
-        randomIndex.push(random);
-      }
-      count++;
+    const availableIndexes = Array.from(
+      { length: paragraphs.length },
+      (_, i) => i
+    ).filter((index) => !excludeIndexes.includes(index));
+
+    // Shuffle available indexes
+    const shuffledIndexes = [...availableIndexes];
+    for (let i = shuffledIndexes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledIndexes[i], shuffledIndexes[j]] = [
+        shuffledIndexes[j],
+        shuffledIndexes[i],
+      ];
     }
+
+    // Take as many indexes as we have references (or available positions, whichever is smaller)
+    const numberOfIndexesToTake = Math.min(
+      references.length,
+      shuffledIndexes.length
+    );
+    randomIndex.push(...shuffledIndexes.slice(0, numberOfIndexesToTake));
+    randomIndex.sort((a, b) => a - b);
 
     // Insert a random reference after each selected paragraph
     const modifiedText = paragraphs.map((paragraph, index) => {
       if (randomIndex.includes(index)) {
+        const referenceIndex = randomIndex.indexOf(index);
         if (paragraph.trim().endsWith(".")) {
           return `${paragraph.trim().slice(0, -1)} ${
-            references[randomNumber(0, references.length - 1)]
+            references[referenceIndex]
           }.`;
         } else {
-          return `${paragraph} ${
-            references[randomNumber(0, references.length - 1)]
-          }.`;
+          return `${paragraph} ${references[referenceIndex]}.`;
         }
       }
       return paragraph;
