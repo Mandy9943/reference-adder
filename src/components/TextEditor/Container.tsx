@@ -16,19 +16,19 @@ import TextEditor from "./TextEditor";
 const Container = () => {
   const preview = useAppSelector(selectTextForEditor);
   const [editor] = useState(() => withReact(createEditor()));
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const onCopy = useCallback(() => {
-    // Obtiene el texto actual del editor como un solo string
     const text = getTextFromNodes(editor.children);
-    // Utiliza la API del portapapeles del navegador para copiar el texto
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        // Manejo opcional de éxito, como mostrar un mensaje
-        console.log("Contenido copiado con éxito!");
+        setCopySuccess(true);
+        setTimeout(() => {
+          setCopySuccess(false);
+        }, 2000);
       })
       .catch((err) => {
-        // Manejo opcional de errores
         console.error("Error al copiar el contenido: ", err);
       });
   }, [editor]);
@@ -49,7 +49,7 @@ const Container = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button className="mr-2" variant="outline">
-                Reset
+                Delete
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -59,7 +59,31 @@ const Container = () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button onClick={onCopy}>Copy Modified Text</Button>
+                <Button
+                  onClick={onCopy}
+                  className={`relative ${
+                    copySuccess ? "bg-green-600 hover:bg-green-700" : ""
+                  }`}
+                >
+                  {copySuccess ? "Copied!" : "Copy Modified Text"}
+                  {copySuccess && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white animate-fade-in"
+                        fill="none"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Download the text with inserted references.</p>
