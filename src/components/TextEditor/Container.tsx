@@ -33,6 +33,15 @@ const Container = () => {
       });
   }, [editor]);
 
+  const handleDelete = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).resetReferenceForm?.();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (editor.children as any) = [
+      { type: "paragraph", children: [{ text: "" }] },
+    ];
+  };
+
   return (
     <div className=" rounded-lg overflow-auto grid gap-6">
       <ScrollArea className="h-96 w-full rounded-md border">
@@ -48,7 +57,7 @@ const Container = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="mr-2" variant="outline">
+              <Button className="mr-2" variant="outline" onClick={handleDelete}>
                 Delete
               </Button>
             </TooltipTrigger>

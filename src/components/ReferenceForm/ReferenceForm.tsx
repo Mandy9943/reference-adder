@@ -28,7 +28,17 @@ const ReferenceForm = () => {
       references: "",
     },
   });
-  const { handleSubmit, setValue } = methods;
+  const { handleSubmit, setValue, reset } = methods;
+
+  const resetForm = () => {
+    reset();
+    dispatch(updateTextForEditor(""));
+    dispatch(updateReferencesForEditor([]));
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).resetReferenceForm = resetForm;
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
 
