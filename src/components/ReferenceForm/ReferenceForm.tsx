@@ -70,18 +70,32 @@ const ReferenceForm = () => {
       ];
     }
 
-    // Take as many indexes as we have references (or available positions, whichever is smaller)
-    const numberOfIndexesToTake = Math.min(
-      references.length,
-      shuffledIndexes.length
-    );
-    randomIndex.push(...shuffledIndexes.slice(0, numberOfIndexesToTake));
+    // Take all available indexes
+    randomIndex.push(...shuffledIndexes);
     randomIndex.sort((a, b) => a - b);
 
-    // Insert a random reference after each selected paragraph
+    // Insert references, using all available ones first, then reusing if necessary
+    const usedReferences = new Set<number>();
     const modifiedText = paragraphs.map((paragraph, index) => {
       if (randomIndex.includes(index)) {
-        const referenceIndex = randomIndex.indexOf(index);
+        let referenceIndex: number;
+
+        // First try to use unused references
+        if (usedReferences.size < references.length) {
+          // Get a random unused reference
+          const unusedReferences = Array.from(
+            Array(references.length).keys()
+          ).filter((i) => !usedReferences.has(i));
+          referenceIndex =
+            unusedReferences[
+              Math.floor(Math.random() * unusedReferences.length)
+            ];
+          usedReferences.add(referenceIndex);
+        } else {
+          // If all references have been used, pick randomly
+          referenceIndex = Math.floor(Math.random() * references.length);
+        }
+
         if (paragraph.trim().endsWith(".")) {
           return `${paragraph.trim().slice(0, -1)} ${
             references[referenceIndex]
