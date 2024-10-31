@@ -1,10 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useAppSelector } from "@/hooks/useRedux";
 import { getTextFromNodes } from "@/lib/utils";
 import { selectTextForEditor } from "@/redux/slices/appSlice";
@@ -54,52 +48,18 @@ const Container = () => {
         </div>
       </ScrollArea>
       <div className="flex items-center justify-end p-2 border-t">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button className="mr-2" variant="outline" onClick={handleDelete}>
-                Delete
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Reset all the input fields and the preview panel.</p>
-            </TooltipContent>
-          </Tooltip>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={onCopy}
-                  className={`relative ${
-                    copySuccess ? "bg-green-600 hover:bg-green-700" : ""
-                  }`}
-                >
-                  {copySuccess ? "Copied!" : "Copy Modified Text"}
-                  {copySuccess && (
-                    <span className="absolute inset-0 flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-white animate-fade-in"
-                        fill="none"
-                        strokeWidth="2"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Download the text with inserted references.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </TooltipProvider>
+        <Button className="mr-2" variant="outline" onClick={handleDelete}>
+          Delete
+        </Button>
+
+        <Button
+          onClick={onCopy}
+          className={`relative ${
+            copySuccess ? "bg-green-600 hover:bg-green-700" : ""
+          }`}
+        >
+          {copySuccess ? "Copied!" : "Copy text"}
+        </Button>
       </div>
     </div>
   );
