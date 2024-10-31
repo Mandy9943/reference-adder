@@ -6,7 +6,7 @@ export default function App() {
       className="flex flex-col items-center min-h-screen py-6 bg-gray-50 dark:bg-gray-900 container"
     >
       <div className="w-full max-w-7xl mx-auto space-y-6 h-full flex flex-col">
-        <div className="mb-20">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-center">
             Random References Inserter
           </h1>
